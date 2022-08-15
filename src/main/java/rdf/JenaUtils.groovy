@@ -18,6 +18,7 @@ import org.apache.jena.datatypes.xsd.XSDDatatype
 import org.apache.jena.ontology.OntDocumentManager
 import org.apache.jena.ontology.OntModel
 import org.apache.jena.ontology.OntModelSpec
+import groovy.io.FileType
 //import org.apache.jena.shacl.* // better to use jena shacl utility
 /**
  * A set of utilities for common functions

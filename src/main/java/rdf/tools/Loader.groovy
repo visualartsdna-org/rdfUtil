@@ -10,7 +10,19 @@ import rdf.JenaUtils
 class Loader {
 	
 
-		static def loadInf(dataFile,schemaFile) {
+		static def loadInf(List dl,schemaFile) {
+			
+			def ju = new JenaUtils()
+			Model data = ju.newModel()
+			dl.each{
+				data.add ju.loadFiles(it);
+			}
+			Model schema = ju.loadFiles(schemaFile);
+			def mdl = ModelFactory.createRDFSModel(schema, data);
+			new SparqlConsole().show(mdl)
+		}
+		
+		static def loadInf(String dataFile,schemaFile) {
 			
 			def ju = new JenaUtils()
 			Model data = ju.loadFiles(dataFile);
@@ -18,6 +30,7 @@ class Loader {
 			def mdl = ModelFactory.createRDFSModel(schema, data);
 			new SparqlConsole().show(mdl)
 		}
+		
 		static def loadOwl(dataFile,schemaFile) {
 			
 			def ju = new JenaUtils()
