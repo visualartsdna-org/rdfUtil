@@ -22,12 +22,33 @@ class SparqlConsoleTest {
 		// as a jena Model for this to work!!
 		println m.size()
 	}
+	
+	@Test
+	void testOneFile() {
+		def d = "G:/My Drive/CWVA/artists/rspates/archive/lsys/image"
+		def t = new File("/temp/lsysAll.ttl")
+		t.text=""
+		new File(d).eachFileRecurse(groovy.io.FileType.FILES){
+			t.text << it.text
+			print "."
+		}
+		
+	}
+
+	@Test
+	void testDir() {
+		long ctms = System.currentTimeMillis()
+		def m = ju.loadDirModel("G:/My Drive/CWVA/artists/rspates/archive/lsys/image")
+		println "${System.currentTimeMillis() - ctms} ms"
+		new SparqlConsole().show(m)
+	}
 
 	// open a query window on a model variable 
 	// defined in a runtime code context
 	@Test
 	void test0() {
-		def m = ju.loadFileModelFilespec("sample.ttl")
+		//def m = ju.loadFileModelFilespec("c:/temp/lsysAll.ttl")
+		def m = ju.loadFileModelFilespec("G:/My Drive/CWVA/artists/rspates/archive/lsys/data/lsys.ttl")
 		new SparqlConsole().show(m)
 	}
 
