@@ -48,7 +48,8 @@ class SparqlConsoleTest {
 	@Test
 	void test0() {
 		//def m = ju.loadFileModelFilespec("c:/temp/lsysAll.ttl")
-		def m = ju.loadFileModelFilespec("G:/My Drive/CWVA/artists/rspates/archive/lsys/data/lsys.ttl")
+		//def m = ju.loadFileModelFilespec("G:/My Drive/CWVA/artists/rspates/archive/lsys/data/lsys.ttl")
+		def m = ju.loadFileModelFilespec("C:/test/webCrawler/baijiDolphin1.ttl")
 		new SparqlConsole().show(m)
 	}
 

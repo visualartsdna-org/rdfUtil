@@ -1,0 +1,106 @@
+options {
+  LOOKAHEAD = 1;
+  CHOICE_AMBIGUITY_CHECK = 2;
+  OTHER_AMBIGUITY_CHECK = 1;
+  STATIC = false;
+  DEBUG_PARSER = false;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
+  ERROR_REPORTING = true;
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = true;
+  IGNORE_CASE = false;
+  USER_TOKEN_MANAGER = false;
+  USER_CHAR_STREAM = false;
+  BUILD_PARSER = true;
+  BUILD_TOKEN_MANAGER = true;
+  SANITY_CHECK = true;
+  FORCE_LA_CHECK = false;
+}
+
+/**
+ cd C:\temp\git\rdfUtil
+ C:\devtools\javacc-javacc-7.0.11\scripts\javacc.bat -OUTPUT_DIRECTORY:src\main\java\rdf\parse src\keepParser.jj
+  */
+
+
+PARSER_BEGIN(KeepParser)
+package rdf.parse;
+import java.util.ArrayList;
+
+
+
+public class KeepParser {
+
+ArrayList al = new ArrayList();
+ArrayList sectionList = new ArrayList();
+
+
+  /** Main entry point. */
+  public static void main(String args[]) throws ParseException {
+    KeepParser parser = new KeepParser(System.in);
+    parser.parse();
+  }
+
+}
+
+PARSER_END(KeepParser)
+
+
+TOKEN: {
+        <NEWLINE: ["\n", "\r"]>
+}
+
+TOKEN: {
+        <WORD: <CHAR> >
+|
+  < #CHAR: ["a"-"z","A"-"Z", "0"-"9", "_", ".", ",", ";", ":", "/", "-", "(", ")", "'", "?", "$", "%", "#", " ", "+", "-", "*", "@"] >
+
+}
+
+void parse():
+{
+}
+{
+	sections()
+    {
+    }
+	<EOF>
+
+}
+
+protected void sections():
+{
+	  Token t = null;
+}
+{
+        section() 
+		{
+		sectionList.add(al);
+		al = new ArrayList();
+		}
+		(   ( t=<NEWLINE> )+
+		section() 
+		{
+		sectionList.add(al);
+		al = new ArrayList();
+		}
+		)* 
+
+    {
+    }
+}
+
+protected void section():
+{
+	  Token t = null;
+}
+{
+        (t=<WORD>
+		{
+		al.add( t.image) ;
+		}
+		)*
+}
+
+
