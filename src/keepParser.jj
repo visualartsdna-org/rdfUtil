@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 public class KeepParser {
 
+String s = "";
 ArrayList al = new ArrayList();
 ArrayList sectionList = new ArrayList();
 
@@ -76,14 +77,19 @@ protected void sections():
 {
         section() 
 		{
-		sectionList.add(al);
-		al = new ArrayList();
+		sectionList.add(s);
+		s = "";
 		}
-		(   ( t=<NEWLINE> )+
+		(   
+
+		( t=<NEWLINE> )+
+		{
+		sectionList.add("");
+		}
 		section() 
 		{
-		sectionList.add(al);
-		al = new ArrayList();
+		sectionList.add(s);
+		s = "";
 		}
 		)* 
 
@@ -98,7 +104,7 @@ protected void section():
 {
         (t=<WORD>
 		{
-		al.add( t.image) ;
+		s +=  t.image ;
 		}
 		)*
 }

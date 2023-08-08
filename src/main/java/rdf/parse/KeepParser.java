@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class KeepParser implements KeepParserConstants {
 
+String s = "";
 ArrayList al = new ArrayList();
 ArrayList sectionList = new ArrayList();
 
@@ -25,8 +26,8 @@ ArrayList sectionList = new ArrayList();
 
   final protected void sections() throws ParseException {Token t = null;
     section();
-sectionList.add(al);
-                al = new ArrayList();
+sectionList.add(s);
+                s = "";
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -51,9 +52,10 @@ sectionList.add(al);
           break label_2;
         }
       }
+sectionList.add("");
       section();
-sectionList.add(al);
-                al = new ArrayList();
+sectionList.add(s);
+                s = "";
     }
 
 }
@@ -71,7 +73,7 @@ sectionList.add(al);
         break label_3;
       }
       t = jj_consume_token(WORD);
-al.add( t.image) ;
+s +=  t.image ;
     }
 }
 
