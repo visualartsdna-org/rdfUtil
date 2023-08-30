@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*
 import org.apache.jena.rdf.model.Model
 import org.junit.jupiter.api.Test
 import rdf.JenaUtils
+import org.apache.jena.rdf.model.*
 
 class SparqlConsoleTest {
 
@@ -38,9 +39,22 @@ class SparqlConsoleTest {
 	@Test
 	void testDir() {
 		long ctms = System.currentTimeMillis()
-		def m = ju.loadDirModel("G:/My Drive/CWVA/artists/rspates/archive/lsys/image")
+		def m = ju.loadDirModel("C:/temp/git/cwvaContent/ttl")
 		println "${System.currentTimeMillis() - ctms} ms"
 		new SparqlConsole().show(m)
+	}
+
+	@Test
+	void testRecurseDirRDFS() {
+		long ctms = System.currentTimeMillis()
+		def data = ju.loadDirRecurseModel("C:/temp/git/cwvaContent/ttl/data")
+		println "data ${data.size()} in ${System.currentTimeMillis() - ctms} ms"
+		ctms = System.currentTimeMillis()
+		def schema = ju.loadDirRecurseModel("C:/temp/git/cwvaContent/ttl/model")
+		println "schema ${schema.size()} in ${System.currentTimeMillis() - ctms} ms"
+		
+		def rdfs = ModelFactory.createRDFSModel(schema, data);
+		new SparqlConsole().show(rdfs)
 	}
 
 	// open a query window on a model variable 

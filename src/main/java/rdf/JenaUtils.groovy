@@ -19,7 +19,7 @@ import org.apache.jena.ontology.OntDocumentManager
 import org.apache.jena.ontology.OntModel
 import org.apache.jena.ontology.OntModelSpec
 import groovy.io.FileType
-//import org.apache.jena.shacl.* // better to use jena shacl utility
+import static groovy.io.FileType.FILES//import org.apache.jena.shacl.* // better to use jena shacl utility
 /**
  * A set of utilities for common functions
  * based on Jena models and related data
@@ -343,6 +343,37 @@ class JenaUtils {
 			model = loadFileModelFilespec(spec,ext)
 		}
 		model
+	}
+	
+	/**".ttl"
+	 * Load a dir of RDF files into a model
+	 * Assumes TTL
+	 * @param dirSpec
+	 * @param data
+	 * @return
+	 */
+	def loadDirRecurseModel(dirSpec,Model data, ext){
+		
+		new File(dirSpec).eachFileRecurse(FILES) {
+			if(it.name.endsWith(ext)) {
+				it.withInputStream { stream ->
+					data.read(stream, null, ext.substring(1))
+				}
+			}
+		}
+		data
+	}
+	
+	/**
+	 * Load a dir of RDF files into a model
+	 * Assumes TTL
+	 * @param dirSpec
+	 * @param data
+	 * @return
+	 */
+	def loadDirRecurseModel(dirSpec){
+		Model data = ModelFactory.createDefaultModel()
+		loadDirRecurseModel(dirSpec, data,".ttl")
 	}
 	
 	/**
