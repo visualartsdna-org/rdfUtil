@@ -7,6 +7,7 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.listeners.StatementListener
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.rdf.model.impl.RDFListImpl
 import org.apache.jena.query.*;
 import org.apache.jena.sparql.core.Prologue
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
@@ -1112,5 +1113,50 @@ select distinct ?s  {
 	def findAllRootsList(m) {
 		findRootsList(m,"")
 	}
+	
+	/**
+	 * get an RDFList from a model as a java list
+	 * model open model
+	 * resource uri string
+	 * property uri string
+	 * returns a list of member FQN uri Strings
+	 */
+	def getRdfList(model,resource, property) {
+		def ls = []
+		Resource res = model.getResource(resource)
+		Property prop = model.createProperty(property)
+		def p=  res.getProperty(prop)
+		Resource node =(Resource) p.getObject()
+		def l = new RDFListImpl(node.asNode(), model).asJavaList()
+		l.each{ ls += ""+it}
+		ls
+	}
+
+	/**
+	 * get an RDFList from a model as a java list
+	 * model open model
+	 * resource uri string
+	 * property uri string
+	 * returns a list of member QName uri Strings
+	 */
+	def getRdfListQName(model,resource, property) {
+		def ls = []
+		Resource res = model.getResource(resource)
+		Property prop = model.createProperty(property)
+		def p=  res.getProperty(prop)
+		Resource node =(Resource) p.getObject()
+		def l = new RDFListImpl(node.asNode(), model).asJavaList()
+		l.each{ ls += getQName(model,""+it)}
+		ls
+	}
+	
+	def getQName(m,s) {
+		def q = getPrefix(m,s)
+		"${q[0]}${q[1]}"
+	}
+
+
+
+
 		
 }

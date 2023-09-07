@@ -45,24 +45,26 @@ class TopicShorthand {
 	 * @return
 	 */
 	def printTopics(c, id) {
-		printTopics(c, id, "")
+		printTopics(c, id, "#")
 	}
 	
-	static def TAB = "  "
+	static def TAB = "#-567=- "
 	// nested titles are further 
 	// indented with defined tab
 	def printTopics(c, id, tab) {
+		def sb = new StringBuilder()
 		def m = c[id]
 		def cptId = m.head
 		def cpt = c[cptId]
 		if (cpt) {
-			println "$tab${cpt.label}\n"
-			println "${cpt.definition}\n\n"
+			sb.append "$tab${cpt.label}\n"
+			sb.append "${cpt.definition}\n\n"
 		}
 		if (m.memberList)
 			m.memberList.each{
-				printTopics(c,it,tab+TAB)
+				sb += printTopics(c,it,tab+TAB)
 			}
+		""+sb
 	}
 
 	/**
@@ -110,7 +112,15 @@ class TopicShorthand {
 	 * parse TSH into TTL
 	 * @param file name
 	 */
-	def parseTsh2Ttl(fn) {
+	def parseTsh2Ttl(File fn) {
+		parseTsh2Ttl(fn.text)
+	}
+	
+	/** 
+	 * parse TSH into TTL
+	 * @param String name
+	 */
+	def parseTsh2Ttl(String tshLines) {
 		def sb = new StringBuilder()
 		sb.append """
 @prefix cwva: <http://visualartsdna.org/2021/07/16/model#> .
@@ -126,13 +136,15 @@ class TopicShorthand {
 
 """
 
-		new File(fn).text.eachLine{
+		def topicOrder = []
+		tshLines.eachLine{
 			//println it
 			if (it.trim() == "") return
 				if (it.trim().startsWith("#")) return // comment
 				def lf = it.trim().split(/\t|;[ ]*/)
 			switch (lf[0].toLowerCase()) {
 				case "topic":
+					topicOrder += lf[1]
 					sb.append """
 ${lf[1]}
 	a the:Topic ;
@@ -173,6 +185,7 @@ ${lf[1]}
 					break
 
 				default:
+					topicOrder += lf[0]
 					if (lf.size()==3) { // assume Topic
 						sb.append """
 ${lf[0]}
@@ -189,25 +202,123 @@ ${lf[0]}
 			}
 
 		}
+		def tos = ""
+		topicOrder.each{
+			tos += "$it "
+		}
+		sb.append """
+		the:aTopicOrder
+			a the:TopicOrder ;
+			skos:memberList ($tos) ;
+		.
+"""
 		sb
-
 	}
-
+	
 	/**
-	 * get an RDFList from a model as a java list
-	 * model open model
-	 * resource uri string
-	 * property uri string
-	 * returns a list of member uri Strings
+	 * Given a model extract the Topics
+	 * and return them in TSH syntax
+	 * @param m
+	 * @return String
 	 */
-	def getRdfList(model,resource, property) {
-		Resource res = model.getResource(resource)
-		Property prop = model.createProperty(property)
-		Resource node = (Resource) res.getProperty(prop).getObject();
-		def l = new RDFListImpl(node.asNode(), model).asJavaList()
-		def ls = []
-		l.each{ ls += ""+it}
-		ls
+	def writeTsh(m) {
+		
+		def s = writeTshConceptScheme(m)
+		s += writeTshTopic(m)
+		s
+	}
+	
+	/**
+	 * Given a model extract the Topics
+	 * and return them in TSH syntax
+	 * @param m
+	 * @return String
+	 */
+	def writeTshConceptScheme(m) {
+		def sb = new StringBuilder()
+		def lm = ju.queryListMap1(m,qPrefixes, """
+select ?s ?tc ?l ?ml {
+		?s a skos:ConceptScheme ;
+			skos:hasTopConcept  ?tc ;
+			the:contains ?ml .
+	optional {?s rdfs:label ?l}
+}
+""")
+
+		
+		def pm = [:]
+		lm.each{
+			pm.s = it.s
+			pm.tc = it.tc
+			pm.l = it.l ?: ""
+			if (!pm.containsKey("ml"))
+				pm.ml = []
+			pm.ml += it.ml
+			
+		}
+		if (pm.isEmpty()) return ""
+		
+		sb.append """conceptScheme; ${getQName(m,pm.s)} ; ${getQName(m,pm.tc)} ; """
+		int i=0
+		pm.ml.each{fqn->
+			sb.append "${i++==0?"":","}${getQName(m,fqn)}"
+		}
+		sb.append "; ${pm.l}\n"
+		
+		""+sb
+	}
+	
+	/**
+	 * Given a model extract the Topics
+	 * and return them in TSH syntax
+	 * @param m
+	 * @return String
+	 */
+	def writeTshTopic(m) {
+		def sb = new StringBuilder()
+		def lm = ju.queryListMap1(m,qPrefixes, """
+select ?s ?h ?rl {
+		?s a the:Topic ;
+			the:head ?h .
+			#skos:memberList ?rl .
+}
+""")
+
+		def topicOrder = []
+		
+		try {
+			topicOrder =ju.getRdfListQName(m,
+			"http://visualartsdna.org/thesaurus/aTopicOrder",
+			"http://www.w3.org/2004/02/skos/core#memberList")
+		} catch (Exception e) {
+			println "# ERROR-no topic order provided!"
+		}
+
+		def pm = [:]
+		lm.each{
+			def key = getQName(m,it.s)
+			if (!pm.containsKey(key))
+				pm[key]=[:]
+			pm[key].s =it.s
+			pm[key].h = getQName(m,it.h)
+		}
+
+		topicOrder.each{t->
+			def map=pm[t]
+			sb.append """topic; ${t} ; ${map.h} ; ("""
+			def l2 = ju.getRdfListQName(m,map.s,"http://www.w3.org/2004/02/skos/core#memberList")
+			int i=0
+			l2.each{qn->
+				sb.append "${i++==0?"":" "}${qn}"
+			}
+			sb.append ")\n"
+		}
+		""+sb
+	}
+	
+	def getQName(m,s) {
+		def q = ju.getPrefix(m,s)
+		"${q[0]}${q[1]}"
 	}
 
 
@@ -218,4 +329,13 @@ ${lf[0]}
 
 		c["@graph"]
 	}
+	
+	def qPrefixes = """
+prefix owl: <http://www.w3.org/2002/07/owl#> 
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+prefix skos: <http://www.w3.org/2004/02/skos/core#> 
+prefix xsd: <http://www.w3.org/2001/XMLSchema#> 
+prefix the:   <http://visualartsdna.org/thesaurus/> 
+"""
 }

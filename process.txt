@@ -1,0 +1,39 @@
+Process
+
+Using folder C:\temp\git\cwvaContent\ttl\topics
+
+
+Ttl2Tsh
+
+TTL is read from the folder
+For each ttl file, 
+If any existing, related tsh file is older
+tsh translation to respective tsh file is created
+No backup for previously existing tsh files created
+If tsh is more recent an error is thrown
+The ttl file can be touched to make it more recent, if necessary
+
+
+Tsh2Ttl
+
+Tsh is read from the folder
+Any ttl with the same root name as a tsh is backed up
+E.g., for topics.tsh and topics.ttl
+topics.ttl -> topics.ttl.{file-last-modified-dateTime)
+
+
+Scenarios
+
+1. tsh exists, no ttl exists
+	Tsh2Ttl (typical), create ttl
+
+2. ttl exists, no tsh
+	Ttl2Tsh (typical), create tsh
+
+3. tsh exists and is older than ttl
+	Ttl2Tsh (typical), restoring tsh for new edits
+	Tsh2Ttl (unusual), error--can't overwrite newer ttl from old tsh 
+
+4. tsh exists and is newer than ttl
+	Ttl2Tsh (blocked), error--can't overwrite newer tsh from old ttl
+	Tsh2Ttl (typical), tsh is modified and ready for ttl, old ttl backed up

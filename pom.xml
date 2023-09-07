@@ -15,6 +15,12 @@
 
 	<dependencies>
 
+<!-- https://mvnrepository.com/artifact/org.markdownj/markdownj -->
+<dependency>
+  <groupId>org.markdownj</groupId>
+  <artifactId>markdownj-core</artifactId>
+  <version>0.4</version>
+</dependency>
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>apache-jena-libs</artifactId>
