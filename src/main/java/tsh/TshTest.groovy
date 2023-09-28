@@ -17,7 +17,44 @@ class TshTest {
 	def base = "C:/temp/git/cwvaContent/ttl/topics"
 
 	@Test
-	void testMarkdown() {
+	void testMarkdownJustTtl() {
+		//def fn = "C:/temp/git/cwvaContent/ttl/topics/topics.tsh"
+		
+		// generate ttl from the tsh
+		//def sb = tsh.parseTsh2Ttl(new File(fn))
+		//println ""+sb
+		Model m = ju.loadFileModelFilespec("C:/temp/Takeout/results/rspates.art.ttl")
+		
+		// query for tsh concept definition
+		def dc = ju.queryListMap(m,"","""
+prefix tko:   <http://visualartsdna.org/takeout#>
+prefix skos:  <http://www.w3.org/2004/02/skos/core#>
+select ?def {
+	?s skos:prefLabel  "tsh" .
+	?s skos:member ?ol .
+	?ol skos:definition ?def .
+}
+""")
+			println dc.def[0]
+			println ""
+		def sb = tsh.parseTsh2Ttl(dc.def[0])
+		m.add ju.saveStringModel(""+sb,"ttl")
+		
+		
+		// extract the model graph from json-ld returning collection
+		def c = tsh.getGraph(m)
+		//c.each{println it}
+		def md = tsh.printTopics(c, "tko:abc")
+		println md
+		MarkdownProcessor markup = new MarkdownProcessor()
+		def s = markup.markdown(md)
+
+		new File("C:/temp/git/cwvaContent/ttl/topics/topic3.html").text = s
+
+	}
+	
+	@Test
+	void testMarkdownTshFile() {
 		def fn = "C:/temp/git/cwvaContent/ttl/topics/topics.tsh"
 		
 		// generate ttl from the tsh
