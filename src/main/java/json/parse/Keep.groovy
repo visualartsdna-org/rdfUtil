@@ -39,7 +39,7 @@ class Keep {
 				return
 			}
 			if (title) {
-				key = s.replaceAll(/[^A-Za-z_0-9]/,"")
+				key = s.replaceAll(/[^A-Za-z_0-9 ]/,"")
 				m[key]=[ann:[:],text:""]
 				title=false
 				prev = s

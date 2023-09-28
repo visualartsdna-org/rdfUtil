@@ -8,7 +8,7 @@ import groovy.json.JsonSlurper
 import org.apache.jena.rdf.model.Model
 
 /**
- * A the:Topic is defined in thesaurus.ttl
+ * A tko:Topic is defined in thesaurus.ttl
  * 
  * Handles key names: Topic, Concept and ConceptScheme one line definitions
  * If key name is absent "Topic" is understood
@@ -19,13 +19,13 @@ import org.apache.jena.rdf.model.Model
  * conceptScheme ; uri ; top concept uri ; {comma-delim list of inScheme concept uris} ; label
  *
 # TSH example
-#topic; the:abc; the:ExtinctionStatement; (the:def the:ghi the:jkl the:mno)
-the:abc; the:ExtinctionStatement; (the:def the:ghi the:jkl the:mno)
-topic; the:def; the:Holocene; ()
+#topic; tko:abc; tko:ExtinctionStatement; (tko:def tko:ghi tko:jkl tko:mno)
+tko:abc; tko:ExtinctionStatement; (tko:def tko:ghi tko:jkl tko:mno)
+topic; tko:def; tko:Holocene; ()
 
 concept; Extinction Statement;  Memorials to extinct species
 
-conceptScheme; the:topScheme; the:ExtinctionStatement; the:Holocene,the:Anthropocene,the:EndangeredSpecies; the scheme label
+conceptScheme; tko:topScheme; tko:ExtinctionStatement; tko:Holocene,tko:Anthropocene,tko:EndangeredSpecies; the scheme label
 # end of example
  *
  * @author ricks
@@ -48,7 +48,7 @@ class TopicShorthand {
 		printTopics(c, id, "#")
 	}
 	
-	static def TAB = "#-567=- "
+	static def TAB = "#"
 	// nested titles are further 
 	// indented with defined tab
 	def printTopics(c, id, tab) {
@@ -57,7 +57,7 @@ class TopicShorthand {
 		def cptId = m.head
 		def cpt = c[cptId]
 		if (cpt) {
-			sb.append "$tab${cpt.label}\n"
+			sb.append "$tab${cpt.prefLabel}\n"
 			sb.append "${cpt.definition}\n\n"
 		}
 		if (m.memberList)
@@ -132,7 +132,7 @@ class TopicShorthand {
 @prefix schema: <https://schema.org/> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix the:   <http://visualartsdna.org/thesaurus/> .
+@prefix tko:   <http://visualartsdna.org/takeout#> .
 
 """
 
@@ -147,8 +147,8 @@ class TopicShorthand {
 					topicOrder += lf[1]
 					sb.append """
 ${lf[1]}
-	a the:Topic ;
-	the:head ${lf[2]} ;
+	a tko:Topic ;
+	tko:head ${lf[2]} ;
 	skos:memberList ${lf[3]} ;
 	.
 """
@@ -156,7 +156,7 @@ ${lf[1]}
 
 				case "concept":
 					sb.append """
-the:${util.Text.camelCase(lf[1])}
+tko:${util.Text.camelCase(lf[1])}
 	a skos:Concept ;
 	rdfs:label         "${lf[1]}" ;
 	skos:definition    \"\"\"${lf[2]}\"\"\" ;
@@ -179,7 +179,7 @@ ${lf[1]}
 	skos:hasTopConcept ${lf[2]} ;"""
 					}
 					sb.append """
-	the:contains ${lf[3]} ;
+	tko:contains ${lf[3]} ;
 	.
 """
 					break
@@ -189,8 +189,8 @@ ${lf[1]}
 					if (lf.size()==3) { // assume Topic
 						sb.append """
 ${lf[0]}
-	a the:Topic ;
-	the:head ${lf[1]} ;
+	a tko:Topic ;
+	tko:head ${lf[1]} ;
 	skos:memberList ${lf[2]} ;
 	.
 """
@@ -207,8 +207,8 @@ ${lf[0]}
 			tos += "$it "
 		}
 		sb.append """
-		the:aTopicOrder
-			a the:TopicOrder ;
+		tko:aTopicOrder
+			a tko:TopicOrder ;
 			skos:memberList ($tos) ;
 		.
 """
@@ -240,7 +240,7 @@ ${lf[0]}
 select ?s ?tc ?l ?ml {
 		?s a skos:ConceptScheme ;
 			skos:hasTopConcept  ?tc ;
-			the:contains ?ml .
+			tko:contains ?ml .
 	optional {?s rdfs:label ?l}
 }
 """)
@@ -278,8 +278,8 @@ select ?s ?tc ?l ?ml {
 		def sb = new StringBuilder()
 		def lm = ju.queryListMap1(m,qPrefixes, """
 select ?s ?h ?rl {
-		?s a the:Topic ;
-			the:head ?h .
+		?s a tko:Topic ;
+			tko:head ?h .
 			#skos:memberList ?rl .
 }
 """)
@@ -336,6 +336,6 @@ prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
 prefix skos: <http://www.w3.org/2004/02/skos/core#> 
 prefix xsd: <http://www.w3.org/2001/XMLSchema#> 
-prefix the:   <http://visualartsdna.org/thesaurus/> 
+pprefix tko:   <http://visualartsdna.org/takeout#>
 """
 }

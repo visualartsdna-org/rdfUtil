@@ -33,7 +33,8 @@ class KeepTest {
 	void test3() {
 		
 		def base = "C:/temp/Takeout/results"
-		def zip = "C:/temp/Takeout/rickspatesart/takeout-20220628T010048Z-001.zip"
+		//def zip = "C:/temp/Takeout/rickspatesart/takeout-20220628T010048Z-001.zip"
+		def zip = "C:/temp/Takeout/rspates.art/takeout-20230925T223227Z-001.zip"
 		def m0= new TkoExtract().processZipJson(zip)
 		def labels = new TkoExtract().processZipTxt(zip)
 		def s = new TtlBuilder().process(m0,labels,"$base/results")

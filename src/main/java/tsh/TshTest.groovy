@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.*
 
 import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
+import org.apache.jena.rdf.model.Model
 import org.junit.jupiter.api.Test
+import org.markdownj.MarkdownProcessor
 import rdf.JenaUtils
 import static groovy.io.FileType.FILES
 
@@ -14,6 +16,29 @@ class TshTest {
 	def tsh = new TopicShorthand()
 	def base = "C:/temp/git/cwvaContent/ttl/topics"
 
+	@Test
+	void testMarkdown() {
+		def fn = "C:/temp/git/cwvaContent/ttl/topics/topics.tsh"
+		
+		// generate ttl from the tsh
+		def sb = tsh.parseTsh2Ttl(new File(fn))
+		//println ""+sb
+		Model m = ju.saveStringModel(""+sb,"ttl")
+		//println m.size()
+		m.add ju.loadFileModelFilespec("C:/temp/Takeout/results/rspates.art.ttl")
+		
+		// extract the model graph from json-ld returning collection
+		def c = tsh.getGraph(m)
+		//c.each{println it}
+		def md = tsh.printTopics(c, "tko:abc")
+		println md
+		MarkdownProcessor markup = new MarkdownProcessor()
+		def s = markup.markdown(md)
+
+		new File("C:/temp/git/cwvaContent/ttl/topics/topic2.html").text = s
+
+	}
+	
 	// TTL -> TSH
 	@Test
 	void Ttl2Tsh() {

@@ -6,10 +6,10 @@ import rdf.JenaUtils
 class TtlBuilder {
 
 	// properties reference an object:
-	// string, e.g., [annotation:abc] becomes {the:annotation "abc"}
+	// string, e.g., [annotation:abc] becomes {tko:annotation "abc"}
 	// a single FQN URI, e.g., <http://visualartsdna.org/work/bdb05de5...>
-	// one or more Qnames, e.g., [member:the:abc, the:def]
-	//	becomes {skos:member the:abc, the:def}
+	// one or more Qnames, e.g., [member:tko:abc, tko:def]
+	//	becomes {skos:member tko:abc, tko:def}
 	static def nsMap = [
 		identifier:"schema",
 		altLabel            : "skos",
@@ -57,7 +57,7 @@ class TtlBuilder {
 		def ju = new JenaUtils()
 		def sb = new StringBuilder()
 		sb.append  """
-@prefix the: <http://visualartsdna.org/takeout#> .
+@prefix tko: <http://visualartsdna.org/takeout#> .
 @prefix work:	<http://visualartsdna.org/work/> .
 @prefix xs: <http://www.w3.org/2001/XMLSchema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
@@ -66,13 +66,13 @@ class TtlBuilder {
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 
-the:KeepConceptScheme
+tko:KeepConceptScheme
   rdf:type owl:Class ;
   rdfs:label "A KeepConceptScheme collects concepts related to one G-Keep note" ;
   rdfs:subClassOf skos:ConceptScheme ;
 .
 
-the:KeepCollection
+tko:KeepCollection
   rdf:type owl:Class ;
   rdfs:label "A KeepCollection collects concepts related to one G-Keep label.  E.g., the drawings collection" ;
   rdfs:subClassOf skos:Collection ;
@@ -92,11 +92,11 @@ the:KeepCollection
 			def m =new Keep().parseKeepConcepts(v1)
 
 			sb.append """
-			the:$uri
+			tko:$uri
 				skos:prefLabel "$k1" ;
 				skos:definition \"\"\"${m.topConcept.text}\"\"\" ;
 """
-			concepts += "the:$uri"
+			concepts += "tko:$uri"
 			
 			// top concept annotations
 			m.topConcept.ann.each{k2,v2->
@@ -113,17 +113,17 @@ the:KeepCollection
 			if (!m.topConcept.ann.containsKey("type")) {
 				sb.append """
 				a skos:Concept ;
-				skos:inScheme the:$guid ;
+				skos:inScheme tko:$guid ;
 				.
 """
 			}
 			
 				// create KeepConceptScheme
 				sb.append  """
-			the:$guid
-				a the:KeepConceptScheme ;
+			tko:$guid
+				a tko:KeepConceptScheme ;
 				skos:prefLabel "$k1 KeepConceptScheme" ;
-				skos:hasTopConcept the:$uri ;
+				skos:hasTopConcept tko:$uri ;
 """
 			// weblinks
 			if (c.annotations) c.annotations.each {
@@ -156,11 +156,12 @@ the:KeepCollection
 				if (k=="topConcept") return
 					//println "$k\n"
 					sb.append """
-			the:${util.Text.camelCase(k)}
+			tko:${util.Text.camelCase(k)}
 				a skos:Concept ;
-				skos:inScheme the:$guid ;
+				skos:prefLabel "$k" ;
+				skos:inScheme tko:$guid ;
 """
-				concepts += "the:${util.Text.camelCase(k)}"
+				concepts += "tko:${util.Text.camelCase(k)}"
 					
 				// internet links
 				if (v.containsKey("ann"))
@@ -199,8 +200,8 @@ the:KeepCollection
 	labelsMap.each{k,v->
 		if (!v.isEmpty())
 		sb.append """
-		the:${UUID.randomUUID()}
-			a the:KeepCollection ;
+		tko:${UUID.randomUUID()}
+			a tko:KeepCollection ;
 			skos:prefLabel "$k" ;
 """
 		v.each{
