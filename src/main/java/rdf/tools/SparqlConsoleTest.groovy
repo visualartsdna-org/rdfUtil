@@ -67,6 +67,20 @@ class SparqlConsoleTest {
 	def tdb = "C:/devtools/apache-jena-fuseki-3.13.1/run/configuration/fxdata.ttl"
 	new SparqlConsole().showTdb(tdb)
 	}
+	
+	
+	@Test
+	void testLoadSize() {
+		Model m = ju.loadFileModelFilespec(
+			"C:/temp/git/cwvaContent/ttl/data/licenseWorks.ttl")
+		// set break on println, then add expression
+		// to open a query window on this model:
+		// new rdf.tools.SparqlConsole().show(m)
+		//
+		// NOTE: the var "m" must be specifically typed
+		// as a jena Model for this to work!!
+		println m.size()
+	}
 
 
 }
