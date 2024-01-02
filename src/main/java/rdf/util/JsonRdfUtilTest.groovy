@@ -48,6 +48,27 @@ class JsonRdfUtilTest {
 		}
 	}
 	
+	@Test
+	void testJson() {
+		def fn = "C:/temp/Takeout/rspates.art/Extinction Statement.json"
+
+			def m = new JsonSlurper().parseText( new File(fn).text )
+			//println JsonOutput.prettyPrint(zipFile.getInputStream(it).text)
+				//println m.textContent
+				def m2= writeTko2Ttl(m.title, m.textContent)
+//				m2.each{k,v->
+//					println "$k\n\t$v"
+//				}
+				def s = makeTtl(m2)
+				println "$s\n\n"
+	}
+	
+	def nsMap = [
+		definition:"skos",
+		scopeNote:"skos",
+		historyNote:"skos",
+		]
+	
 	def makeTtl(m) {
 		def s = """
 @prefix tko: <http://visualartsdna.org/takeout#> .
@@ -58,9 +79,16 @@ class JsonRdfUtilTest {
 			s += """
 		tko:${camelCase(k)} a skos:Concept ;
 			skos:prefLabel "$k";
-			skos:definition "$v" ;
-			.
+			skos:definition "${v.definition}" ;
 """
+			v.findAll{k1,v1->
+				k1 != "definition"
+			}.each{k1,v1->
+				s += """
+			${nsMap[k1]}:$k1 "${v1.trim()}" ;
+				"""
+			}
+			s +="."
 		}
 		s
 	}
@@ -73,6 +101,7 @@ class JsonRdfUtilTest {
 		def txt = ""
 		def blankcnt = 0
 		def m=[:]
+		m[title]=[:]
 		text.eachLine{
 			//println "===$it"
 			if (it.trim() == "") {
@@ -82,7 +111,7 @@ class JsonRdfUtilTest {
 				}
 				else if (fndText && !topConcept) {
 					topConcept = true
-					m[title]=txt
+					m[title]["definition"]=txt
 					fndText = false
 					txt = ""
 					//blankcnt = 0
@@ -90,18 +119,25 @@ class JsonRdfUtilTest {
 				else if (fndText && newConcept) {
 					newConcept = false
 					concept=txt
+					m[concept]=[:]
 					fndText = false
 					txt = ""
 					blankcnt = 0
 				}
 				else if (concept && blankcnt==1) {
-					m[concept]=txt
+					m[concept]["definition"]=txt
 					fndText = false
 					txt = ""
 				}
 			}
 			else {
-				txt += it
+				if (it.startsWith("[")) {
+					def key= (it=~/\[([A-Za-z]+)\:([A-Za-z0-9\.\-_ ]+)\]/)[0][1]
+					def value= (it=~/\[([A-Za-z]+)\:([A-Za-z0-9\.\-_ ]+)\]/)[0][2]
+					m[concept][key] = value
+				} else {
+					txt += it
+				}
 				fndText = true
 				blankcnt=0
 			}
