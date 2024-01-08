@@ -57,7 +57,10 @@ class TopicShorthand {
 		def m3 = map[m.head]
 		if (!m3) return
 		def title = m3.prefLabel
-		def defn = m3.definition
+//		if (title=="IUCN Red List") {
+//			println "here2"
+//		}
+		def defn = inlineConcept(m3, map)
 
 		sb.append """
 <h$n>
@@ -70,6 +73,22 @@ $defn
 			printTopic(map[it], map, sb, n+1)
 			
 		}
+	}
+	
+	// locate inline op, e.g., [inline:concept]
+	// extract concept
+	// derive definition from concept
+	// insert into text replacing op
+	def inlineConcept(m3, map) {
+		def defn = m3.definition
+		(defn =~ /(\[inline\:.*?\])/).collect{
+			it[1]
+		}.each{
+			def cpt = (it =~ /\[inline\:(.*)\]/)[0][1]
+			println cpt
+			defn = defn.replaceAll("\\$it",map["tko:$cpt"].definition+"\n")
+		}
+		defn
 	}
 
 	def getGraph( model) {
@@ -98,7 +117,7 @@ $defn
 			}
 			else {
 				
-				sb.append """tko:topScheme  a		tko:Topic ;
+				sb.append """${l[1]}  a		tko:Topic ;
         tko:head		${l[2]} ;
         skos:memberList		${l[3]} .\n"""
 			}
