@@ -65,7 +65,7 @@ class TopicShorthand {
 		sb.append """
 <h$n>
 $title
-<h$n/>
+</h$n>
 <br/>
 $defn
 """
@@ -106,6 +106,7 @@ $defn
 		def sb = new StringBuilder()
 		sb.append Prefixes
 		tshLines.eachLine{
+			if (it.trim()=="") return
 			def l = it.split(";")
 			if (l[0] == "conceptScheme") {
 				//def l2 = l[2].split(",")
