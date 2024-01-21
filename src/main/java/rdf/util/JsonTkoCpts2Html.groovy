@@ -9,7 +9,7 @@ import rdf.JenaUtils
 import tsh.TopicShorthand
 import groovy.io.FileType
 
-class JsonRdfUtilTest {
+class JsonTkoCpts2Html {
 	def ju = new JenaUtils()
 	
 	def prefixMap = [
@@ -28,12 +28,13 @@ class JsonRdfUtilTest {
 	
 	@Test
 	void testDriver() {
-		driver()
+		//def path = "C:/temp/Takeout/rspates.art"
+		def path = "C:/temp/Takeout/scubedsemantics"
+		driver(path)
 	}
 
 	//	driver for complete pass to html
-	def driver() {
-		def path = "C:/temp/Takeout/rspates.art"
+	def driver(path) {
 		
 		// get latest zip
 		def zipFile = getLatestZip(path)
@@ -72,7 +73,9 @@ class JsonRdfUtilTest {
 //		s.eachLine{
 //			println "${n++}  $it"
 //		}
-		ju.saveStringModel(s, "TTL")
+		def m=ju.saveStringModel(s, "TTL")
+		println ju.saveModelString(m)
+		m
 	}
 	
 	def extractTsh2Ttl(zipFile) {
@@ -228,7 +231,7 @@ class JsonRdfUtilTest {
 	}
 
 	@Test
-	void testJson() {
+	void testJson0() {
 		def fn = "C:/temp/Takeout/rspates.art/Extinction Statement.json"
 
 		def m = new JsonSlurper().parseText( new File(fn).text )
@@ -237,6 +240,18 @@ class JsonRdfUtilTest {
 		println "$s\n\n"
 	}
 	
+	@Test
+	void testJson() {
+		def dn = "C:/temp/Takeout/scubedsemantics/test"
+		new File(dn).eachFileRecurse (FileType.FILES) { file ->
+			def m = new JsonSlurper().parseText( file.text )
+			def m2= writeTko2Map(m.title, m.textContent)
+			//m2.each{println it}
+			def s = new JsonTkoCpts2Html().makeTtl(m2)
+			println "$s\n\n"
+		}
+	}
+
 	@Test
 	void testInlineConcept() {
 		def fn = "C:/temp/Takeout/rspates.art/Extinction Statement.json"
@@ -285,67 +300,53 @@ class JsonRdfUtilTest {
 	}
 
 	def writeTko2Map(title,text) {
-		def topConcept = false
-		def newConcept = false
-		def fndText = false
-		def concept=null
-		def txt = ""
-		def blankcnt = 0
 		def m=[:]
-		m[title]=[:]
-		text.eachLine{
-			if (it=="Endangered Designation") {
-				println "here"
+		def l = text.split(/\n\n\n/)
+		l.each{
+			def l1 = it.split(/\n\n/)
+			if (l1.size()==1) {
+				// title concept and text
+				m[title] = [:]
+				def m0 = refine(l1[0])
+				m[title] = m0
 			}
-			if (it.trim() == "") {
-				blankcnt++
-				if (blankcnt>=2) {
-					newConcept = true
+			if (l1.size()>=2) {
+				// text concept and text
+				def c = l1.head().trim()
+				m[c]=[:]
+				l1.tail().each{
+					def m0 = refine(it)
+					m[c] = m0
 				}
-				else if (fndText && !topConcept) {
-					topConcept = true
-					m[title]["definition"]=txt
-					fndText = false
-					txt = ""
-				}
-				else if (fndText && newConcept) {
-					newConcept = false
-					concept=txt
-					m[concept]=[:]
-					fndText = false
-					txt = ""
-					blankcnt = 0
-				}
-				else if (concept && blankcnt==1) {
-					m[concept]["definition"]=txt
-					fndText = false
-					txt = ""
-				}
-			}
-			else {
-				if (it.startsWith("[")) {
-					def key= (it=~/\[([A-Za-z]+)\:([A-Za-z0-9\.\-_ ]+)\]/)[0][1]
-					def value= (it=~/\[([A-Za-z]+)\:([A-Za-z0-9\.\-_ ]+)\]/)[0][2]
-					
-					// inline  concept
-					if (key == "inline") {
-						txt += it
-					} else {
-						m[concept][key] = value
-					}
-				} else {
-					txt += it
-				}
-				fndText = true
-				blankcnt=0
 			}
 		}
-		m[concept]["definition"]=txt
+		m
+	}
+
+	def refine(text) {
+		def m = [:]
+		def txt = ""
+		text.eachLine{
+			if (it.startsWith("[")) {
+				def key= (it=~/\[([A-Za-z]+)\:([A-Za-z0-9\.\-_ ]+)\]/)[0][1]
+				def value= (it=~/\[([A-Za-z]+)\:([A-Za-z0-9\.\-_ ]+)\]/)[0][2]
+
+				// inline  concept
+				if (key == "inline") {
+					txt += it
+				} else {
+					m[key] = value
+				}
+			} else {
+				txt += it
+			}
+		}
+		m["definition"]=txt
 		m
 	}
 
 
-	static def camelCase(s) {
+	def camelCase(s) {
 		s.replaceAll( /( )([A-Za-z0-9])/, {
 			it[2].toUpperCase()
 		} )
