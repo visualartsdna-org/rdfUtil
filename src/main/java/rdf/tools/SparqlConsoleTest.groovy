@@ -72,7 +72,7 @@ class SparqlConsoleTest {
 	@Test
 	void testLoadSize() {
 		Model m = ju.loadFileModelFilespec(
-			"C:/temp/git/cwvaContent/ttl/data/licenseWorks.ttl")
+			"C:/temp/test/ttl/vocab/palette.ttl")
 		// set break on println, then add expression
 		// to open a query window on this model:
 		// new rdf.tools.SparqlConsole().show(m)
