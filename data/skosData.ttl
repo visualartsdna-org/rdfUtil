@@ -1,0 +1,15 @@
+# skos rule test data
+@prefix eg: <http://example.com/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+eg:A a skos:Concept ;
+	skos:broader eg:B ;
+	skos:related eg:C ;
+	.
+
+eg:A1 a skos:Concept ;
+	skos:broader eg:B1 ;
+	skos:related eg:B1 ;
+	.
+
+	

@@ -1,0 +1,4 @@
+[inverseRule: (?A skos:broader ?B) -> (?B skos:narrower ?A) ]
+[transitiveRule: (?A skos:related ?B), (?B skos:related ?C) -> (?A skos:related ?C) ]
+[transitiveRule2: (?A skos:broader ?B), (?B skos:broader ?C) -> (?A skos:broader ?C) ]
+[symmetricRule: (?Y skos:related ?X) -> (?X skos:related ?Y) ] 
