@@ -19,7 +19,9 @@ class TshTest {
 	void testPrintTopics() {
 		def ttlFile = "$base/topics.ttl"
 		def m = ju.loadFileModelFilespec(""+ttlFile)
+		println m.size()
 		def m2 = ju.loadFileModelFilespec("C:/temp/Takeout/results/rspates.art.ttl")
+		println m2.size()
 		m.add m2
 		
 		def s = tsh.printTopics(m)

@@ -44,15 +44,15 @@ class SparqlConsoleTest {
 //		def infile = "C:/stage/february2022/node/ttl/art.ttl"
 		//def infile = "C:/test/linkeddata/instance-types_lang=en_specific.ttl"
 //		def infile = "C:/test/linkeddata/instance-types_lang=en_specific.ttl"
-		def infile = "C:/test/linkeddata/schemaorg/schemaorg-current-http.ttl"
+		def infile = "C:/temp/git/cwvaServer/stats.ttl"
 		new SparqlConsole().show(infile)
 	}
 
 	@Test
 	void test4() {
 		def l = [
-			"C:/stage/plannedDecember/node/ttl/art.ttl",
-			"C:/stage/plannedDecember/node/ttl/test.ttl",
+			"C:/temp/git/cwvaServer/artPal.ttl",
+			"C:/temp/git/cwvaServer/stats.ttl",
 			]
 		new SparqlConsole().show(l)
 	}

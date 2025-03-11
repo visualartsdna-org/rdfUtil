@@ -28,8 +28,8 @@ class JsonTkoCpts2Html {
 	
 	@Test
 	void testDriver() {
-		//def path = "C:/temp/Takeout/rspates.art"
-		def path = "C:/temp/Takeout/scubedsemantics"
+		def path = "C:/temp/Takeout/rspates.art"
+		//def path = "C:/temp/Takeout/scubedsemantics"
 		driver(path)
 	}
 
@@ -275,7 +275,7 @@ class JsonTkoCpts2Html {
 
 	def makeTtl(m) {
 		def s = """
-@prefix tko: <http://visualartsdna.org/takeout#> .
+@prefix tko: <http://visualartsdna.org/takeout/> .
 @prefix xs: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
