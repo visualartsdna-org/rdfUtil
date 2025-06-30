@@ -10,7 +10,7 @@ class TopicShorthand {
 	def Prefixes = """
 @prefix schema: <https://schema.org/> .
 @prefix tko:   <http://visualartsdna.org/takeout/> .
-@prefix vad:  <http://visualartsdna.org/2021/07/16/model#> .
+@prefix vad:  <http://visualartsdna.org/model/> .
 @prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
 @prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
 
