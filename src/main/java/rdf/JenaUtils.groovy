@@ -9,7 +9,6 @@ import org.apache.jena.rdf.listeners.StatementListener
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.query.*;
 import org.apache.jena.sparql.core.Prologue
-import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
 import org.apache.jena.update.UpdateRequest
 import org.apache.jena.util.FileManager;
 import org.apache.jena.util.ResourceUtils
@@ -901,24 +900,28 @@ class JenaUtils {
 	 * @param meta
 	 * @return
 	 */
-	def loadOntImports(meta) {
+	def loadOntImports(meta, type) {
 		def importSet = [:]
 		OntDocumentManager mgr = new OntDocumentManager();
 		OntModelSpec s = new OntModelSpec( OntModelSpec.RDFS_MEM );
 		s.setDocumentManager( mgr );
-		loadOntImports(s,meta,importSet)
+		loadOntImports(s,meta,importSet, type)
 	}
 	
+	def loadOntImports(meta) {
+		loadOntImports(meta, null)
+	}
 	/**
 	 * Load referenced imports
 	 * w/r.t. an ontology model
 	 * @param meta
 	 * @return
 	 */
-	def loadOntImports(s,meta,importSet) {
+	def loadOntImports(s,meta,importSet, type) {
 //		println meta
 		OntModel m = ModelFactory.createOntologyModel( s );
-		m.read(meta)
+		if (type) m.read(meta, type)
+		else m.read(meta)
 //		println m.size()
 		def qm = new JenaUtils().queryListMap1(m,"", """
 prefix owl:   <http://www.w3.org/2002/07/owl#> 
