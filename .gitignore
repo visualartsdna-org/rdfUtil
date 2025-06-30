@@ -1,6 +1,8 @@
 *.pydevproject
 *.xlsx
 .metadata
+.classpath
+dependency-reduced-pom.xml
 bin/
 tmp/
 target/
@@ -23,8 +25,8 @@ target/
 Servers/
 
 # Eclipse Core
-#.project
-.settings
+.project
+.settings/
 bin/
 lib/
 scripts/
