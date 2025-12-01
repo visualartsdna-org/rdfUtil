@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*
 
 import org.apache.jena.rdf.model.Model
 import org.junit.jupiter.api.Test
+import rdf.JenaUtilities
 import rdf.JenaUtils
 
 class SparqlConsoleTest {
@@ -59,7 +60,7 @@ class SparqlConsoleTest {
 
 	@Test
 	void test() {
-		new SparqlConsole().show("/temp/junk/tags.ttl")
+		new SparqlConsole().show("data/skosData.ttl")
 	}
 	
 	@Test
@@ -68,7 +69,13 @@ class SparqlConsoleTest {
 	new SparqlConsole().showTdb(tdb)
 	}
 	
+	@Test
+	void testMetrics() {
+		def m = new JenaUtilities().loadFiles("/work/stats/ttl/out_202505011357.ttl")
+		new SparqlConsole().show(m)
+	}
 	
+
 	@Test
 	void testLoadSize() {
 		Model m = ju.loadFileModelFilespec(

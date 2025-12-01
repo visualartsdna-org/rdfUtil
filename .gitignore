@@ -58,3 +58,4 @@ test/
 
 # STS (Spring Tool Suite)
 .springBeans
+dependencies.txt
