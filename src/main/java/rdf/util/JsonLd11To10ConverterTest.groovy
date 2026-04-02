@@ -91,7 +91,7 @@ class JsonLd11To10ConverterTest {
     "foaf" : "http://xmlns.com/foaf/0.1/"
   },
   "@id" : "work:4b3d2b42-0273-44dc-9b4a-1c431d96ab3f",
-  "@type" : "vad:Watercolor",
+  "@type" : "vad:WatercolorWork",
   "hasArtistProfile" : "work:ebab5e0c-cc32-4928-b326-1ddb4dd62c22",
   "hasPaper" : "the:FabrianoArtisticoGranaFinaColdPress",
   "media" : "Watercolor",
